@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pemesanan Produk UMKM</title>
+  <style>
+    /* ============ TEMA ============ */
+    :root {
+      --bg1: #eef2ff;
+      --bg2: #fdf2f8;
+      --bg3: #ecfeff;
+      --card: rgba(255, 255, 255, 0.78);
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: rgba(15, 23, 42, 0.1);
+      --input: #ffffff;
+      --accent1: #6366f1;
+      --accent2: #ec4899;
+      --accent3: #06b6d4;
+      --shadow: 0 25px 60px -25px rgba(79, 70, 229, 0.35);
+      color-scheme: light;
+    }
+
+    /* Ikuti preferensi sistem */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg1: #0b1020;
+        --bg2: #1a0b2e;
+        --bg3: #041a24;
+        --card: rgba(17, 24, 39, 0.72);
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --border: rgba(148, 163, 184, 0.18);
+        --input: rgba(15, 23, 42, 0.65);
+        --shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.7);
+        color-scheme: dark;
+      }
+    }
+
+    /* Pilihan manual dari tombol tema (tanpa JavaScript) */
+    :root:has(#m-light:checked) {
+      --bg1: #eef2ff;
+      --bg2: #fdf2f8;
+      --bg3: #ecfeff;
+      --card: rgba(255, 255, 255, 0.78);
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: rgba(15, 23, 42, 0.1);
+      --input: #ffffff;
+      --shadow: 0 25px 60px -25px rgba(79, 70, 229, 0.35);
+      color-scheme: light;
+    }
+    :root:has(#m-dark:checked) {
+      --bg1: #0b1020;
+      --bg2: #1a0b2e;
+      --bg3: #041a24;
+      --card: rgba(17, 24, 39, 0.72);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.18);
+      --input: rgba(15, 23, 42, 0.65);
+      --shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.7);
+      color-scheme: dark;
+    }
+
+    /* ============ BASE ============ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background: linear-gradient(-45deg, var(--bg1), var(--bg2), var(--bg3), var(--bg1));
+      background-size: 400% 400%;
+      animation: gradientMove 16s ease infinite;
+      transition: color 0.4s ease;
+      line-height: 1.5;
+    }
+
+    @keyframes gradientMove {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Radio tema disembunyikan, tetapi tetap berfungsi lewat label */
+    .sr {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .app {
+      position: relative;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
+    }
+
+    /* ============ HEADER & TEMA ============ */
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .switch {
+      display: inline-flex;
+      padding: 4px;
+      gap: 4px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .switch label {
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+
+    .switch label:hover { color: var(--text); }
+
+    #m-sys:checked ~ .app .switch label[for="m-sys"],
+    #m-light:checked ~ .app .switch label[for="m-light"],
+    #m-dark:checked ~ .app .switch label[for="m-dark"] {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #fff;
+      box-shadow: 0 6px 16px -6px var(--accent1);
+    }
+
+    /* ============ HERO ============ */
+    .hero {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent1);
+      background: color-mix(in srgb, var(--accent1) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent1) 30%, transparent);
+    }
+
+    .hero h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3), var(--accent1));
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 6s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 560px;
+      color: var(--muted);
+    }
+
+    /* ============ CARD ============ */
+    .card {
+      position: relative;
+      padding: 28px;
+      border-radius: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    /* Garis gradasi bergerak di atas kartu */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      border-radius: 28px 28px 0 0;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3), var(--accent1));
+      background-size: 300% 100%;
+      animation: shimmer 5s linear infinite;
+    }
+
+    .section {
+      border: none;
+      padding: 0;
+      margin: 0 0 30px;
+      min-width: 0;
+    }
+
+    .section legend {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 0;
+      margin-bottom: 16px;
+    }
+
+    .section legend span {
+      display: inline-grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .full { grid-column: 1 / -1; }
+      .card { padding: 36px; }
+    }
+
+    /* ============ FIELD ============ */
+    .field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+
+    .field > label,
+    .label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .req { color: var(--accent2); margin-left: 2px; }
+
+    .control {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .ico {
+      position: absolute;
+      left: 14px;
+      font-size: 1rem;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--input);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .control input { padding-left: 42px; }
+
+    select { appearance: none; cursor: pointer; padding-right: 40px;
+      background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    textarea { resize: vertical; min-height: 110px; }
+
+    input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.7; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent1);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent1) 22%, transparent);
+    }
+
+    input:user-invalid, textarea:user-invalid {
+      border-color: var(--accent2);
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ============ CHIP (pilihan) ============ */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .chip input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chip span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--input);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      transition: all 0.25s ease;
+    }
+
+    .chip:hover span {
+      transform: translateY(-2px);
+      border-color: var(--accent1);
+    }
+
+    .chip:has(input:checked) span {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      box-shadow: 0 10px 22px -10px var(--accent2);
+    }
+
+    .chip:has(input:focus-visible) span {
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent1) 30%, transparent);
+    }
+
+    /* Topping (kotak centang) */
+    .topping-group {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin: 0 0 12px;
+      background: color-mix(in srgb, var(--input) 60%, transparent);
+    }
+
+    .topping-group legend {
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0 8px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .topping-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    @media (min-width: 640px) {
+      .topping-list { grid-template-columns: 1fr 1fr; }
+    }
+
+    .check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: background 0.2s;
+    }
+
+    .check:hover { background: color-mix(in srgb, var(--accent1) 8%, transparent); }
+
+    .check input {
+      accent-color: var(--accent2);
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .check strong { display: block; color: var(--text); }
+    .check small  { color: var(--muted); }
+
+    /* Jumlah (stepper sederhana) */
+    .qty input {
+      text-align: center;
+      padding-left: 14px;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .row-2 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ============ KONSENT & TOMBOL ============ */
+    .consent {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 16px;
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--accent3) 10%, transparent);
+      border: 1px dashed color-mix(in srgb, var(--accent3) 45%, transparent);
+      font-size: 0.88rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .consent input {
+      accent-color: var(--accent1);
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 14px 26px;
+      border-radius: 14px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-ghost {
+      color: var(--muted);
+      background: transparent;
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-ghost:hover { color: var(--text); }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(-45deg, var(--accent1), var(--accent2), var(--accent3), var(--accent1));
+      background-size: 300% 300%;
+      animation: gradientMove 6s ease infinite;
+      box-shadow: 0 14px 30px -12px var(--accent1);
+      min-width: 200px;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 18px 36px -12px var(--accent2);
+    }
+
+    footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* Hormati pengguna yang mematikan animasi */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pilihan tema (tanpa JavaScript) -->
+  <input type="radio" name="tema" id="m-sys" class="sr" checked>
+  <input type="radio" name="tema" id="m-light" class="sr">
+  <input type="radio" name="tema" id="m-dark" class="sr">
+
+  <main class="app">
+
+    <header class="top">
+      <div class="brand">🛍️ UMKM Store</div>
+      <nav class="switch" aria-label="Pilih tema">
+        <label for="m-sys">Sistem</label>
+        <label for="m-light">☀️ Terang</label>
+        <label for="m-dark">🌙 Gelap</label>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <span class="badge">Pemesanan Online</span>
+      <h1>Pemesanan Produk UMKM</h1>
+      <p>Isi formulir di bawah dengan lengkap. Tim kami akan menghubungi Anda melalui WhatsApp untuk konfirmasi pesanan.</p>
+    </section>
+
+    <form class="card" action="#" method="post">
+
+      <!-- 01 DATA DIRI -->
+      <fieldset class="section">
+        <legend><span>01</span> Data Diri</legend>
+        <div class="grid">
+          <div class="field">
+            <label for="nama">Nama Lengkap <em class="req">*</em></label>
+            <div class="control">
+              <span class="ico">👤</span>
+              <input id="nama" name="nama" type="text" placeholder="Contoh: Budi Santoso" autocomplete="name" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="wa">No. WhatsApp <em class="req">*</em></label>
+            <div class="control">
+              <span class="ico">📱</span>
+              <input id="wa" name="wa" type="tel" placeholder="08xxxxxxxxxx" pattern="[0-9+ ]{9,15}" autocomplete="tel" required>
+            </div>
+            <span class="hint">Gunakan nomor yang aktif di WhatsApp</span>
+          </div>
+
+          <div class="field full">
+            <label for="email">Email</label>
+            <div class="control">
+              <span class="ico">✉️</span>
+              <input id="email" name="email" type="email" placeholder="nama@email.com" autocomplete="email">
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 02 PILIH PRODUK -->
+      <fieldset class="section">
+        <legend><span>02</span> Pilih Produk</legend>
+        <div class="grid">
+          <div class="field full">
+            <label for="produk">Produk <em class="req">*</em></label>
+            <div class="control">
+              <span class="ico">☕</span>
+              <select id="produk" name="produk" required>
+                <option value="" disabled selected>— Pilih produk —</option>
+                <option value="kopi-ketenangan">Kopi Ketenangan</option>
+                <option value="es-kopi-senja">Es Kopi Senja</option>
+                <option value="mie-ayam">Mie Ayam</option>
+                <option value="nasi-goreng">Nasi Goreng</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">Ukuran</span>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="ukuran" value="regular" checked><span>Regular</span></label>
+              <label class="chip"><input type="radio" name="ukuran" value="large"><span>Large</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="jumlah">Jumlah Porsi <em class="req">*</em></label>
+            <div class="control qty">
+              <span class="ico">🔢</span>
+              <input id="jumlah" name="jumlah" type="number" min="1" max="100" value="1" required>
+            </div>
+          </div>
+
+          <div class="field full">
+            <span class="label">Tambahan Topping <span class="hint">(opsional)</span></span>
+
+            <fieldset class="topping-group">
+              <legend>Creamy &amp; Cheese</legend>
+              <div class="topping-list">
+                <label class="check"><input type="checkbox" name="topping" value="cheese-foam"><span><strong>Cheese Foam</strong><small>atau Macchiato Foam</small></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="rich-cheese"><span><strong>Rich Creamy Cheese</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="vanilla-puff"><span><strong>Vanilla Cream Puff</strong></span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="topping-group">
+              <legend>Crunchy &amp; Texture</legend>
+              <div class="topping-list">
+                <label class="check"><input type="checkbox" name="topping" value="crispy-crumbs"><span><strong>Crispy Regal Crumbs</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="coco-crunch"><span><strong>Coco Crunch Bites</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="almond"><span><strong>Almond Slices</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="oreo-crush"><span><strong>Oreo Crush</strong></span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="topping-group">
+              <legend>Sweet &amp; Jelly</legend>
+              <div class="topping-list">
+                <label class="check"><input type="checkbox" name="topping" value="boba"><span><strong>Brown Sugar Pearls (Boba)</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="rainbow-jelly"><span><strong>Rainbow Jelly</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="pudding"><span><strong>Pudding Silky</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="cincau"><span><strong>Grass Jelly</strong><small>Cincau Hitam Premium</small></span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="topping-group">
+              <legend>Topping Mewah (Extra)</legend>
+              <div class="topping-list">
+                <label class="check"><input type="checkbox" name="topping" value="extra-espresso"><span><strong>Extra Espresso Shot</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="sea-salt-caramel"><span><strong>Sea Salt Caramel</strong></span></label>
+                <label class="check"><input type="checkbox" name="topping" value="choco-granola"><span><strong>Choco Granola</strong></span></label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="field full">
+            <label for="catatan-produk">Catatan Pesanan</label>
+            <input id="catatan-produk" name="catatan-produk" type="text" placeholder="Contoh: gula less, es sedikit, pedas level 2">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 03 PENGAMBILAN & PEMBAYARAN -->
+      <fieldset class="section">
+        <legend><span>03</span> Pengambilan &amp; Pembayaran</legend>
+        <div class="grid">
+          <div class="field full">
+            <span class="label">Jenis Pengambilan <em class="req">*</em></span>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="pengambilan" value="ambil" checked><span>🏪 Ambil di Tempat</span></label>
+              <label class="chip"><input type="radio" name="pengambilan" value="antar"><span>🛵 Diantar</span></label>
+            </div>
+          </div>
+
+          <div class="row-2 full">
+            <div class="field">
+              <label for="tanggal">Tanggal <em class="req">*</em></label>
+              <div class="control">
+                <span class="ico">📅</span>
+                <input id="tanggal" name="tanggal" type="date" required>
+              </div>
+            </div>
+            <div class="field">
+              <label for="waktu">Perkiraan Waktu</label>
+              <div class="control">
+                <span class="ico">⏰</span>
+                <input id="waktu" name="waktu" type="time">
+              </div>
+            </div>
+          </div>
+
+          <div class="field full">
+            <span class="label">Metode Pembayaran <em class="req">*</em></span>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="bayar" value="cash" required><span>💵 Cash</span></label>
+              <label class="chip"><input type="radio" name="bayar" value="qris"><span>📲 QRIS</span></label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 04 ALAMAT -->
+      <fieldset class="section">
+        <legend><span>04</span> Alamat Pengiriman</legend>
+        <div class="grid">
+          <div class="field full">
+            <label for="alamat">Alamat Lengkap</label>
+            <textarea id="alamat" name="alamat" rows="4" placeholder="Nama jalan, nomor rumah, RT/RW, patokan"></textarea>
+            <span class="hint">Wajib diisi jika memilih opsi "Diantar"</span>
+          </div>
+
+          <div class="row-2 full">
+            <div class="field">
+              <label for="kota">Kota / Kabupaten</label>
+              <div class="control">
+                <span class="ico">🏙️</span>
+                <input id="kota" name="kota" type="text" placeholder="Contoh: Surabaya" autocomplete="address-level2">
+              </div>
+            </div>
+            <div class="field">
+              <label for="kodepos">Kode Pos</label>
+              <div class="control">
+                <span class="ico">📮</span>
+                <input id="kodepos" name="kodepos" type="text" placeholder="60xxx" pattern="[0-9]{5}" autocomplete="postal-code">
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- PERSETUJUAN -->
+      <label class="consent">
+        <input type="checkbox" name="setuju" required>
+        <span>Saya menyatakan data yang saya isi sudah benar dan menyetujui data saya digunakan untuk keperluan konfirmasi pesanan.</span>
+      </label>
+
+      <div class="actions">
+        <button class="btn btn-ghost" type="reset">Reset</button>
+        <button class="btn btn-primary" type="submit">Kirim Pesanan →</button>
+      </div>
+    </form>
+
+    <footer>© 2026 UMKM Store · Pesanan diproses setelah konfirmasi via WhatsApp</footer>
+  </main>
+</body>
+</html>
