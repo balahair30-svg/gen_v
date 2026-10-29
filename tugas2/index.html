@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media & Layout</title>
+    <link rel="icon" type="image/x-icon" href="../logo1.ico">
+    <style>
+        :root {
+            --card-bg: #ffffff;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --accent: #6366f1;
+            --radius: 20px;
+            --shadow: 0 12px 32px rgba(15, 23, 42, 0.25), 0 2px 6px rgba(15, 23, 42, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            color: var(--ink);
+            background: linear-gradient(135deg, #312e81 0%, #1e3a8a 50%, #0e7490 100%);
+            background-color: #1e3a8a;
+            overflow-x: hidden;
+        }
+
+        /* ===== Animated 3D background ===== */
+        .scene {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .float {
+            position: absolute;
+            left: var(--x);
+            top: var(--y);
+            perspective: 800px;
+            animation: drift 9s ease-in-out infinite;
+            animation-delay: var(--dl);
+        }
+
+        .cube {
+            position: relative;
+            width: var(--s);
+            height: var(--s);
+            transform-style: preserve-3d;
+            animation: spin var(--d) linear infinite;
+            animation-delay: var(--dl);
+        }
+
+        .cube div {
+            position: absolute;
+            inset: 0;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
+
+        .cube div:nth-child(1) { transform: translateZ(calc(var(--s) / 2)); }
+        .cube div:nth-child(2) { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+        .cube div:nth-child(3) { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
+        .cube div:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+        .cube div:nth-child(5) { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+        .cube div:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+
+        @keyframes spin {
+            from { transform: rotateX(0deg) rotateY(0deg); }
+            to   { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-30px); }
+        }
+
+        /* ===== Content ===== */
+        .wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 48px 16px;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 32px;
+            text-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 2 baris x 2 kolom, ukuran sama */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            position: relative;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 44px rgba(15, 23, 42, 0.35), 0 4px 10px rgba(15, 23, 42, 0.12);
+        }
+
+        .card img,
+        .card video,
+        .card iframe {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border: 0;
+        }
+
+        .tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 999px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            pointer-events: none;
+        }
+
+        /* ===== Audio card ===== */
+        .audio-card {
+            flex-direction: column;
+            gap: 18px;
+            padding: 24px;
+            background: linear-gradient(180deg, #ffffff 0%, #f5f3ff 100%);
+        }
+
+        .disc {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at center, #ffffff 0 12%, transparent 13%),
+                conic-gradient(from 0deg, #e0e7ff, #c7d2fe, #e0e7ff, #c7d2fe, #e0e7ff);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3), inset 0 0 0 6px rgba(255, 255, 255, 0.6);
+            animation: spin 6s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .disc.playing {
+            animation-play-state: running;
+        }
+
+        .audio-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .audio-card audio {
+            width: 100%;
+            max-width: 420px;
+            height: 44px;
+            color-scheme: light;
+            border-radius: 999px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 600px) {
+            .wrap { padding: 32px 16px; }
+            h1 { font-size: 1.5rem; margin-bottom: 24px; }
+            .grid { gap: 14px; }
+            .disc { width: 64px; height: 64px; }
+            .audio-card { padding: 16px; gap: 12px; }
+            .audio-title { font-size: 0.9rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .float, .cube, .disc { animation: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Latar belakang 3D animasi -->
+    <div class="scene" aria-hidden="true">
+        <div class="float" style="--x:8%; --y:12%; --dl:0s;">
+            <div class="cube" style="--s:120px; --d:20s; --dl:0s;">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+        </div>
+        <div class="float" style="--x:78%; --y:8%; --dl:-5s;">
+            <div class="cube" style="--s:80px; --d:16s; --dl:-5s;">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+        </div>
+        <div class="float" style="--x:22%; --y:70%; --dl:-9s;">
+            <div class="cube" style="--s:160px; --d:24s; --dl:-9s;">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+        </div>
+        <div class="float" style="--x:88%; --y:62%; --dl:-3s;">
+            <div class="cube" style="--s:100px; --d:18s; --dl:-3s;">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+        </div>
+        <div class="float" style="--x:50%; --y:40%; --dl:-7s;">
+            <div class="cube" style="--s:70px; --d:14s; --dl:-7s;">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+        </div>
+        <div class="float" style="--x:60%; --y:85%; --dl:-12s;">
+            <div class="cube" style="--s:130px; --d:22s; --dl:-12s;">
+                <div></div><div></div><div></div><div></div><div></div><div></div>
+            </div>
+        </div>
+    </div>
+
+    <main class="wrap">
+        <h1>Media &amp; Layout</h1>
+        <h1>Nasrul</h1>
+
+        <section class="grid">
+
+            <!-- Baris 1, kolom 1: Gambar -->
+            <figure class="card">
+                <span class="tag">Gambar</span>
+                <img src="assets/WhatsAppImage.jpeg" alt="Gambar" loading="lazy">
+            </figure>
+
+            <!-- Baris 1, kolom 2: Video -->
+            <figure class="card">
+                <span class="tag">Video</span>
+                <video controls playsinline preload="metadata">
+                    <source src="assets/WhatsApp%20Video%202026-10-25%20at%2004.09.23.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung video.
+                </video>
+            </figure>
+
+            <!-- Baris 2, kolom 1: Audio -->
+            <div class="card audio-card">
+                <span class="tag">Audio</span>
+                <div class="disc" id="disc"></div>
+                <p class="audio-title">Merry Christmas</p>
+                <audio id="player" controls preload="metadata">
+                    <source src="assets/MerryChristmas.mp3" type="audio/mpeg">
+                    Browser Anda tidak mendukung audio.
+                </audio>
+            </div>
+
+            <!-- Baris 2, kolom 2: YouTube -->
+            <figure class="card">
+                <span class="tag">YouTube</span>
+                <iframe src="https://www.youtube.com/embed/OnEjJAyqibo?si=cvpdGcWyVa7Awsie"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen></iframe>
+            </figure>
+
+        </section>
+    </main>
+
+    <script>
+        // Putar piringan audio saat musik dimainkan
+        (function () {
+            var player = document.getElementById('player');
+            var disc = document.getElementById('disc');
+            player.addEventListener('play', function () { disc.classList.add('playing'); });
+            player.addEventListener('pause', function () { disc.classList.remove('playing'); });
+            player.addEventListener('ended', function () { disc.classList.remove('playing'); });
+        })();
+    </script>
+</body>
+</html>
