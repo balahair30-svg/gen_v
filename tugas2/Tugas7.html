@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informasi Seputar PeTIK Jombang</title>
+    <style>
+        /* Reset Dasar */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0f2027;
+            font-family: "Times New Roman", Times, serif;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* --- BACKGROUND ANIMASI 3D --- */
+        .scene {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            perspective: 900px;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            background-size: 300% 300%;
+            animation: bgShift 18s ease infinite;
+        }
+
+        @keyframes bgShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Pembungkus: bergerak naik */
+        .floater {
+            position: absolute;
+            bottom: -150px;
+            width: var(--s);
+            height: var(--s);
+            animation: rise var(--rise) linear infinite;
+            animation-delay: var(--delay);
+        }
+
+        @keyframes rise {
+            from { transform: translateY(0) translateZ(var(--z)); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            to   { transform: translateY(-120vh) translateZ(var(--z)); opacity: 0; }
+        }
+
+        /* Kubus 3D: berputar */
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spin var(--spin) linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            to   { transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg); }
+        }
+
+        .face {
+            position: absolute;
+            inset: 0;
+            border: 2px solid rgba(255, 242, 0, 0.7);
+            background: rgba(22, 147, 184, 0.18);
+            box-shadow: inset 0 0 12px rgba(255, 242, 0, 0.25);
+        }
+
+        .face.front  { transform: translateZ(calc(var(--s) / 2)); }
+        .face.back   { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+        .face.right  { transform: rotateY(90deg)  translateZ(calc(var(--s) / 2)); }
+        .face.left   { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+        .face.top    { transform: rotateX(90deg)  translateZ(calc(var(--s) / 2)); }
+        .face.bottom { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+
+        /* Pembungkus Utama */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 1000px;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            height: 111vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: #1693b8;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-icon {
+            background-color: white;
+            color: #1693b8;
+            font-size: 26px;
+            font-weight: bold;
+            padding: 2px 15px;
+            border-radius: 20px;
+            line-height: 1;
+            margin-bottom: 3px;
+        }
+
+        .logo-text {
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-top a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        /* --- TATA LETAK TENGAH --- */
+        .main-content {
+            display: flex;
+            min-height: 420px;
+        }
+
+        /* Kolom Kuning Kiri & Kanan */
+        .sidebar {
+            width: 20%;
+            background-color: #fff200;
+            padding: 30px 20px;
+        }
+
+        /* Iklan Android Kiri */
+        .sidebar-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .css-icon {
+            width: 70px;
+            height: 70px;
+            background-color: #00bcd4;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: floatIcon 2.5s ease-in-out infinite;
+        }
+
+        .css-icon svg {
+            width: 46px;
+            height: 46px;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-6px); }
+        }
+
+        .sidebar-left p {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Kolom Artikel Tengah */
+        .content {
+            width: 60%;
+            padding: 30px 40px;
+            background-color: white;
+        }
+
+        .content h1 {
+            font-family: Arial, sans-serif;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: justify;
+            font-size: 15px;
+        }
+
+        /* Menu Link Kanan */
+        .sidebar-right {
+            display: flex;
+            flex-direction: column;
+            padding-top: 50px;
+            padding-left: 30px;
+            gap: 20px;
+        }
+
+        .sidebar-right a {
+            color: #222222;
+            text-decoration: underline;
+            font-size: 15px;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #1693b8;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scene, .floater, .cube, .css-icon { animation: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background 3D -->
+    <div class="scene" id="scene"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">∞</div>
+                <div class="logo-text">PeTIK Jombang</div>
+            </div>
+            <div class="nav-top">
+                <a href="#">About</a>
+                <a href="#">Blog</a>
+                <a href="#">Shop</a>
+                <a href="#">Contact</a>
+            </div>
+        </header>
+
+        <!-- Area Konten -->
+        <div class="main-content">
+            <!-- Sidebar Kiri (Kuning) -->
+            <div class="sidebar sidebar-left">
+                <div class="css-icon">
+                    <!-- Ikon Android -->
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="Ikon Android">
+                        <!-- antena -->
+                        <line x1="20" y1="8" x2="25" y2="16" stroke="#3ddc84" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="44" y1="8" x2="39" y2="16" stroke="#3ddc84" stroke-width="3" stroke-linecap="round"/>
+                        <!-- kepala -->
+                        <path d="M14 30 A18 18 0 0 1 50 30 Z" fill="#3ddc84"/>
+                        <circle cx="25" cy="24" r="2.2" fill="#fff"/>
+                        <circle cx="39" cy="24" r="2.2" fill="#fff"/>
+                        <!-- badan -->
+                        <rect x="14" y="33" width="36" height="18" rx="4" fill="#3ddc84"/>
+                        <!-- lengan -->
+                        <rect x="6" y="33" width="6" height="14" rx="3" fill="#3ddc84"/>
+                        <rect x="52" y="33" width="6" height="14" rx="3" fill="#3ddc84"/>
+                        <!-- kaki -->
+                        <rect x="22" y="49" width="7" height="10" rx="3" fill="#3ddc84"/>
+                        <rect x="35" y="49" width="7" height="10" rx="3" fill="#3ddc84"/>
+                    </svg>
+                </div>
+                <p>Iklan Android</p>
+            </div>
+
+            <!-- Teks Artikel (Putih) -->
+            <div class="content">
+                <h1>Informasi Seputar PeTIK Jombang</h1>
+                <p>PeTIK Jombang merupakan lembaga pendidikan vokasi Teknologi Informasi dan Komunikasi dengan dukungan pembelajaran bidang kepesantrenan (Kajian Kitab Kuning) dari ulama-ulama yang memiliki sanad keilmuan yang jelas.</p>
+                <p>PeTIK Jombang yang merupakan lembaga pendidikan di bawah naungan Yayasan Baitul Maal (YBM) PLN, berkomitmen melanjutkan visi dan misi untuk menebarkan manfaat kepada umat seluas-luasnya. Hal ini diwujudkan dengan memberikan kemanfaatan kepada anak-anak dhuafa untuk mengenyam pendidikan teknologi informasi dan komunikasi selama 1 (satu) tahun. Jurusan pendidikan teknologi informasi dan komunikasi bagi mahasantri dibagi menjadi 2 (dua) jurusan yaitu : Pengembangan Perangkat Lunak (PPL) dan Digital Marketing (DM).</p>
+                <p>Pada jurusan PPL, mahasantri diajarkan bagaimana membuat website, aplikasi berbasis web, aplikasi mobile, merancang UI/UX, merancang database, dan lain-lain. Jurusan DM, mahasantri diajarkan bagaimana menggunakan tool marketing online melalui internet, memasang iklan melalui Instagram, Facebook, TikTok guna meningkatkan penjualan produk. Selain itu juga diajarkan SEO (Search Engine Optimization). Di bidang kepesantrenan, mahasantri diajarkan Kitab Hadits Arbain, Kitab Kuning Taklim Mutaalim, Tauhid (Aqidatul Awam), Fiqih (Safinatunnajah, Fathul Qorib), Tasawuf (Sulam Taufiq, Bidayatul Hidayah), Tafsir (Al Ibris), Nahwu (Jurumiyah).</p>
+            </div>
+
+            <!-- Sidebar Kanan (Kuning) -->
+            <div class="sidebar sidebar-right">
+                <a href="#">Beranda</a>
+                <a href="#">Article</a>
+                <a href="#">Pendaftaran</a>
+                <a href="#">Galery</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            Copyright &copy; 2023 Programming PeTIK. All Rights Reserved
+        </footer>
+    </div>
+
+    <script>
+        // Buat kubus 3D melayang untuk background
+        (function () {
+            var scene = document.getElementById('scene');
+            var faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+            var total = 22;
+
+            for (var i = 0; i < total; i++) {
+                var size = 30 + Math.random() * 70;
+                var floater = document.createElement('div');
+                floater.className = 'floater';
+                floater.style.left = (Math.random() * 100) + '%';
+                floater.style.setProperty('--s', size + 'px');
+                floater.style.setProperty('--z', (-200 + Math.random() * 300) + 'px');
+                floater.style.setProperty('--rise', (14 + Math.random() * 16) + 's');
+                floater.style.setProperty('--delay', (-Math.random() * 25) + 's');
+
+                var cube = document.createElement('div');
+                cube.className = 'cube';
+                cube.style.setProperty('--spin', (8 + Math.random() * 14) + 's');
+
+                faces.forEach(function (f) {
+                    var face = document.createElement('div');
+                    face.className = 'face ' + f;
+                    cube.appendChild(face);
+                });
+
+                floater.appendChild(cube);
+                scene.appendChild(floater);
+            }
+        })();
+    </script>
+</body>
+</html>
