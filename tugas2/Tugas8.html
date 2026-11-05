@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Belajar Web Design</title>
+<style>
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  /* Area tempat lingkaran bergerak */
+  .area {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+  }
+
+  /* Lingkaran yang bergerak kiri-kanan */
+  .lingkaran {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 250px;
+    background-color: #990f4f;
+    border-radius: 50%;
+    animation: gerak 6s ease-in-out infinite alternate;
+  }
+
+  @keyframes gerak {
+    from { left: 0; }
+    to   { left: calc(100% - 250px); }
+  }
+
+  /* Pita hijau mint berisi teks berjalan */
+  .pita {
+    background-color: #7fffd4;
+    height: 122px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Teks merah yang berjalan ke kiri */
+  .teks {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%;
+    color: red;
+    font-size: 54px;
+    font-weight: bold;
+    animation: jalan 14s linear infinite;
+  }
+
+  @keyframes jalan {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="area">
+    <div class="lingkaran"></div>
+  </div>
+
+  <div class="pita">
+    <div class="teks">Selamat Belajar Transition & Animation.</div>
+  </div>
+
+</body>
+</html>
