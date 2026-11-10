@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        
+// SOAL 1: Menghitung Luas Segitiga
+// Rumus: 0.5 * alas * tinggi
+
+function hitungLuasSegitiga(alas, tinggi) {
+    return 0.5 * alas * tinggi;
+}
+
+let alasSegitiga = 10;
+let tinggiSegitiga = 6;
+let hasilLuas = hitungLuasSegitiga(alasSegitiga, tinggiSegitiga);
+
+console.log("=== SOAL 1: Luas Segitiga ===");
+console.log(`Alas: ${alasSegitiga}, Tinggi: ${tinggiSegitiga}`);
+console.log(`Hasil Luas Segitiga = ${hasilLuas}\n`);
+
+
+
+// SOAL 2: Cek Angka Positif, Negatif, atau Nol
+
+function cekPositifNegatifNol(angka) {
+    if (angka > 0) {
+        return "Positif";
+    } else if (angka < 0) {
+        return "Negatif";
+    } else {
+        return "Nol";
+    }
+}
+
+
+console.log("=== SOAL 2: Cek Angka ===");
+let angka1 = 15;
+let angka2 = -8;
+let angka3 = 0;
+
+console.log(`Angka ${angka1} adalah: ${cekPositifNegatifNol(angka1)}`);
+console.log(`Angka ${angka2} adalah: ${cekPositifNegatifNol(angka2)}`);
+console.log(`Angka ${angka3} adalah: ${cekPositifNegatifNol(angka3)}`);
+    </script>
+</body>
+</html>
